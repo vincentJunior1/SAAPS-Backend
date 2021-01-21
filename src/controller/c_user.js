@@ -2,6 +2,7 @@ const helper = require('../helper/helper')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
+const fs = require('fs')
 const {
   registerUserModel,
   cekEmailUser,
@@ -103,27 +104,54 @@ module.exports = {
   updateProfile: async (req, res) => {
     try {
       const { user_id } = req.decodeToken
-      const {
+      const { user_name, user_email, user_phone, user_lat, user_lng } = req.body
+      const setData = {
         user_name,
         user_email,
         user_phone,
-        user_status,
+        user_updated_at: new Date(),
         user_lat,
         user_lng
-      } = req.body
+      }
       const userDetail = await cekUserModel(user_id)
       if (userDetail.length > 0) {
-        const setData = {
-          user_name,
-          user_email,
-          user_phone,
-          user_status,
-          user_updated_at: new Date(),
-          user_lat,
-          user_lng
+        if (req.file == undefined) {
+          const newData = {
+            ...userDetail[0],
+            ...setData
+          }
+          const result = await patchUserModel(newData, user_id)
+          return helper.response(res, 200, 'Success Patch User Data', result)
+        } else {
+          if (userDetail[0].user_image === '') {
+            const newData = {
+              ...userDetail[0],
+              ...setData,
+              ...{ user_image: req.file.filename }
+            }
+            const result = await patchUserModel(newData, user_id)
+            return helper.response(res, 200, 'Success Patch User Data', result)
+          } else {
+            fs.unlink('./uploads/' + userDetail[0].user_image, async (err) => {
+              if (err) {
+                return helper.response(res, 400, "Can't Upload Image")
+              } else {
+                const newData = {
+                  ...userDetail[0],
+                  ...setData,
+                  ...{ user_image: req.file.filename }
+                }
+                const result = await patchUserModel(newData, user_id)
+                return helper.response(
+                  res,
+                  200,
+                  'Success Pathc User Data',
+                  result
+                )
+              }
+            })
+          }
         }
-        const result = await patchUserModel(setData, user_id)
-        return helper.response(res, 200, 'Success Patch User Data', result)
       } else {
         return helper.response(res, 404, 'User Not Found')
       }
