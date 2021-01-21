@@ -21,7 +21,7 @@ module.exports = {
   getChatPerRoom: (room_chat) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT * FROM chat LEFT JOIN room ON chat.room_chat = room.room_chat WHERE chat.room_chat = ${room_chat}`,
+        `SELECT * FROM chat WHERE chat.room_chat = ${room_chat}`,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
         }
@@ -41,6 +41,28 @@ module.exports = {
           reject(new Error(error))
         }
       })
+    })
+  },
+  getChatPerId: (room_chat, id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM chat WHERE room_chat = ${room_chat} AND user_id_to = ${id} AND chat_status = 0`,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
+  readChatModel: (data, id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        'UPDATE chat SET ? WHERE chat_id = ? AND room_chat = ?',
+        [data, id, data.room_chat],
+        (error, result) => {
+          console.log(error)
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
     })
   }
 }

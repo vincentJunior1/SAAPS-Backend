@@ -3,7 +3,9 @@ const {
   createRoomChatModel,
   getAllChat,
   getChatPerRoom,
-  sendMessageModel
+  sendMessageModel,
+  getChatPerId,
+  readChatModel
 } = require('../model/m_chat')
 
 module.exports = {
@@ -54,9 +56,8 @@ module.exports = {
   },
   getChatPerRoom: async (req, res) => {
     try {
-      const { user_id } = req.decodeToken
       const { id } = req.params
-      const getChat = await getChatPerRoom(id, user_id)
+      const getChat = await getChatPerRoom(id)
       if (getChat.length > 0) {
         return helper.response(res, 200, 'Success Get Chat Per Room', getChat)
       } else {
@@ -75,13 +76,28 @@ module.exports = {
         room_chat: id,
         user_id_from: user_id,
         user_id_to: user_id_to,
-        chat_content
+        chat_content,
+        chat_status: 0
       }
       const result = await sendMessageModel(message)
       return helper.response(res, 200, 'Success Send Message', result)
     } catch (error) {
       console.log(error)
       return helper.response(res, 400, 'Failed Send Message', error)
+    }
+  },
+  readChat: async (req, res) => {
+    try {
+      const { user_id } = req.decodeToken
+      const { id } = req.params
+      const getChat = await getChatPerId(id, user_id)
+      getChat.map(async (x) => {
+        x = { ...x, ...{ chat_status: 1 } }
+        await readChatModel(x, x.chat_id)
+      })
+      return helper.response(res, 200, 'Success Read Chat')
+    } catch (error) {
+      return helper.response(res, 400, 'Failed Read Chat', error)
     }
   }
 }
