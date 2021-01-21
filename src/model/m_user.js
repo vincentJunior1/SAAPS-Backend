@@ -70,5 +70,26 @@ module.exports = {
         }
       )
     })
+  },
+  addFriendModel: (data) => {
+    return new Promise((resolve, reject) => {
+      connection.query('INSERT INTO friend SET ?', data, (error, result) => {
+        if (!error) {
+          resolve(result)
+        } else {
+          reject(new Error(error))
+        }
+      })
+    })
+  },
+  cekFriendListModel: (user_id_from, user_id_to) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM friend WHERE user_id_from = ${user_id_from} AND user_id_to = ${user_id_to} AND friend_status = 1 `,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
   }
 }

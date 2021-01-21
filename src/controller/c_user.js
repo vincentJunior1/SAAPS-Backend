@@ -7,7 +7,9 @@ const {
   cekEmailUser,
   cekUserModel,
   patchUserModel,
-  cekCodeVerifcation
+  cekCodeVerifcation,
+  addFriendModel,
+  cekFriendListModel
 } = require('../model/m_user')
 module.exports = {
   registerUser: async (req, res) => {
@@ -131,9 +133,54 @@ module.exports = {
   },
   findUserByEmail: async (req, res) => {
     try {
-      const { user_id } = req.decodeToken
-      const { emailRequest } = req.body
+      const { user_email } = req.decodeToken
+      const { userEmail } = req.query
+      if (user_email == userEmail) {
+        return helper.response(res, 400, "You Can't Search Your Own Email")
+      } else {
+        const cekEmail = await cekEmailUser(user_email)
+        if (cekEmail <= 0) {
+          return helper.response(res, 404, 'User Not Found')
+        } else {
+          return helper.response(res, 200, 'Found User', cekEmail[0])
+        }
+      }
     } catch (error) {
+      return helper.response(res, 400, 'Something Wrong', error)
+    }
+  },
+  addUser: async (req, res) => {
+    try {
+      const { user_id } = req.decodeToken
+      const { id } = req.params
+      const cekUser = await cekUserModel(id)
+      const cekFriendList = await cekFriendListModel(user_id, id)
+      if (cekFriendList <= 0) {
+        if (cekUser.length <= 0) {
+          return helper.response(res, 404, 'User Not Found')
+        } else {
+          const friendData = {
+            user_id_from: user_id,
+            user_id_to: id,
+            friend_status: 1
+          }
+          console.log('oke')
+          await addFriendModel(friendData)
+          return helper.response(
+            res,
+            200,
+            `Success Add ${cekUser[0].user_name}`
+          )
+        }
+      } else {
+        return helper.response(
+          res,
+          400,
+          `${cekUser[0].user_name} is already in your friend list`
+        )
+      }
+    } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Something Wrong', error)
     }
   },
