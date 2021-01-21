@@ -18,13 +18,12 @@ module.exports = {
       )
     })
   },
-  getChatPerRoom: (room_chat, user_id_from) => {
+  getChatPerRoom: (room_chat) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT * FROM chat LEFT JOIN room ON chat.room_chat = room.room_chat WHERE chat.room_chat = ${room_chat} AND chat.user_id_from = ${user_id_from}`,
+        `SELECT * FROM chat LEFT JOIN room ON chat.room_chat = room.room_chat WHERE chat.room_chat = ${room_chat}`,
         (error, result) => {
-          console.log(error)
-          console.log(result)
+          !error ? resolve(result) : reject(new Error(error))
         }
       )
     })
