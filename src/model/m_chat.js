@@ -64,5 +64,16 @@ module.exports = {
         }
       )
     })
+  },
+  countNotification: (room_chat) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        'SELECT COUNT(*) FROM chat WHERE room_chat = ? AND chat_status = 0',
+        room_chat,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
   }
 }

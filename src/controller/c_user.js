@@ -15,7 +15,13 @@ const {
 module.exports = {
   registerUser: async (req, res) => {
     try {
-      const { user_name, user_email, user_password, user_phone } = req.body
+      const {
+        user_name,
+        user_email,
+        user_bio,
+        user_password,
+        user_phone
+      } = req.body
       const cekEmail = await cekEmailUser(user_email)
       console.log(cekEmail)
       if (cekEmail.length <= 0) {
@@ -27,7 +33,8 @@ module.exports = {
           user_name,
           user_email,
           user_password: encryptPassword,
-          user_phone
+          user_phone,
+          user_bio
         }
         let transporter = nodemailer.createTransport({
           host: 'smtp.google.com',
@@ -44,7 +51,7 @@ module.exports = {
           from: '"Admin SAAPPS 👻" <liekian71@gmail.com>', // sender address
           to: user_email, // list of receivers
           subject: 'Verification', // Subject line
-          html: `Click Link For Verification<b>http://localhost:3000/user/verification/${userCode}</b>` // html body
+          html: `Click Link For Verification<b>http://localhost:8080/verification/${userCode}</b>` // html body
         })
         const result = await registerUserModel(setData)
         return helper.response(res, 200, 'Success Add Data', result)
@@ -111,7 +118,8 @@ module.exports = {
         user_phone,
         user_updated_at: new Date(),
         user_lat,
-        user_lng
+        user_lng,
+        user_bio
       }
       const userDetail = await cekUserModel(user_id)
       if (userDetail.length > 0) {
@@ -156,6 +164,7 @@ module.exports = {
         return helper.response(res, 404, 'User Not Found')
       }
     } catch (error) {
+      console.log(error)
       return helper.response(res, 400, "Can't Update Profile", error)
     }
   },

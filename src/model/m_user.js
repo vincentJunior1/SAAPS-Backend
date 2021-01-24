@@ -24,6 +24,7 @@ module.exports = {
         'SELECT * FROM user WHERE user_email = ?',
         email,
         (error, result) => {
+          console.log(error)
           !error ? resolve(result) : reject(new Error(error))
         }
       )
