@@ -74,7 +74,6 @@ module.exports = {
           user_password,
           cekEmail[0].user_password
         )
-        console.log(password)
         if (password) {
           const {
             user_id,
@@ -118,8 +117,7 @@ module.exports = {
         user_phone,
         user_updated_at: new Date(),
         user_lat,
-        user_lng,
-        user_bio
+        user_lng
       }
       const userDetail = await cekUserModel(user_id)
       if (userDetail.length > 0) {
@@ -171,11 +169,12 @@ module.exports = {
   findUserByEmail: async (req, res) => {
     try {
       const { user_email } = req.decodeToken
-      const { userEmail } = req.query
+      const { userEmail } = req.body
+      console.log(userEmail)
       if (user_email == userEmail) {
         return helper.response(res, 400, "You Can't Search Your Own Email")
       } else {
-        const cekEmail = await cekEmailUser(user_email)
+        const cekEmail = await cekEmailUser(userEmail)
         if (cekEmail <= 0) {
           return helper.response(res, 404, 'User Not Found')
         } else {
@@ -183,6 +182,7 @@ module.exports = {
         }
       }
     } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Something Wrong', error)
     }
   },
@@ -237,6 +237,33 @@ module.exports = {
       }
     } catch (error) {
       return helper.response(res, 400, 'Something Wrong')
+    }
+  },
+  changePassword: async (req, res) => {
+    try {
+      const { user_id } = req.decodeToken
+      const { newPassword, oldPassword } = req.body
+      const user = await cekUserModel(user_id)
+      const cekPassword = bcrypt.compareSync(oldPassword, user[0].user_password)
+      if (cekPassword) {
+        const salt = bcrypt.genSaltSync(10)
+        const encryptPassword = bcrypt.hashSync(newPassword, salt)
+        const newData = {
+          ...user[0],
+          ...{ user_password: encryptPassword }
+        }
+        await patchUserModel(newData, user_id)
+        return helper.response(res, 200, 'Success Change Password')
+      } else {
+        return helper.response(res, 401, 'Wrong Password')
+      }
+    } catch (error) {
+      return helper.response(
+        res,
+        400,
+        'Something Error With Server Please Try Again',
+        error
+      )
     }
   }
 }

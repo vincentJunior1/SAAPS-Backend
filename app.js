@@ -40,7 +40,8 @@ io.on('connection', (socket) => {
     socket.join(data.room)
   })
   socket.on('roomMessage', (data) => {
-    io.to(data.room).emit('chatMessage', data)
+    console.log(data)
+    io.to(data.room_chat).emit('chatMessage', data)
   })
   socket.on('typing', (data) => {
     console.log(data)

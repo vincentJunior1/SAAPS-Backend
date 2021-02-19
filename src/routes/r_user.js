@@ -5,7 +5,8 @@ const {
   updateProfile,
   verificationUser,
   findUserByEmail,
-  addUser
+  addUser,
+  changePassword
 } = require('../controller/c_user')
 const uploadFilter = require('../middleware/multerProfile')
 
@@ -15,7 +16,8 @@ router.post('/register/', registerUser)
 router.post('/login/', loginUser)
 router.patch('/editprofile/', authorization, uploadFilter, updateProfile)
 router.post('/verification/:id', verificationUser)
-router.get('/finduser', authorization, findUserByEmail)
+router.post('/finduser', authorization, findUserByEmail)
 router.post('/addfriend/:id', authorization, addUser)
+router.patch('/changepassword/', authorization, changePassword)
 
 module.exports = router

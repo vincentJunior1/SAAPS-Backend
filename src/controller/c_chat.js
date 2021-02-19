@@ -5,7 +5,8 @@ const {
   getChatPerRoom,
   sendMessageModel,
   getChatPerId,
-  readChatModel
+  readChatModel,
+  getAllFriendList
 } = require('../model/m_chat')
 
 module.exports = {
@@ -39,6 +40,7 @@ module.exports = {
   getAllRoomChat: async (req, res) => {
     try {
       const { user_id } = req.decodeToken
+      console.log(user_id)
       const roomChat = await getAllChat(user_id)
       if (roomChat.length > 0) {
         return helper.response(res, 200, 'Success Get All Room Chat', roomChat)
@@ -56,14 +58,12 @@ module.exports = {
   },
   getChatPerRoom: async (req, res) => {
     try {
+      const { user_id } = req.decodeToken
       const { id } = req.params
-      const getChat = await getChatPerRoom(id)
-      if (getChat.length > 0) {
-        return helper.response(res, 200, 'Success Get Chat Per Room', getChat)
-      } else {
-        return helper.response(res, 404, 'This Chat Is Empty')
-      }
+      const getChat = await getChatPerRoom(id, user_id)
+      return helper.response(res, 200, 'Success Get Chat Per Room', getChat)
     } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Something Wrong With This Chat', error)
     }
   },
@@ -98,6 +98,15 @@ module.exports = {
       return helper.response(res, 200, 'Success Read Chat')
     } catch (error) {
       return helper.response(res, 400, 'Failed Read Chat', error)
+    }
+  },
+  getFriendList: async (req, res) => {
+    try {
+      const { user_id } = req.decodeToken
+      const result = await getAllFriendList(user_id)
+      return helper.response(res, 200, 'Success Get All Friend list', result)
+    } catch (error) {
+      return helper.response(res, 400, 'Something Wrong', error)
     }
   }
 }
