@@ -21,7 +21,6 @@ const io = socket(server, {
 io.on('connection', (socket) => {
   console.log('Socket.Io Connect')
   socket.on('globalMessage', (data) => {
-    console.log(data)
     io.emit('chatMessage', data)
   })
   socket.on('privateMessage', (data) => {
@@ -31,7 +30,6 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('chatMessage', data)
   })
   socket.on('joinRoom', (data) => {
-    console.log(data)
     socket.join(data.room)
   })
   socket.on('changeRoom', (data) => {
@@ -40,11 +38,9 @@ io.on('connection', (socket) => {
     socket.join(data.room)
   })
   socket.on('roomMessage', (data) => {
-    console.log(data)
     io.to(data.room_chat).emit('chatMessage', data)
   })
   socket.on('typing', (data) => {
-    console.log(data)
     socket.broadcast.to(data.room).emit('typingMessage', data)
   })
 })

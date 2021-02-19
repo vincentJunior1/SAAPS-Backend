@@ -6,7 +6,8 @@ const {
   sendMessageModel,
   getChatPerId,
   readChatModel,
-  getAllFriendList
+  getAllFriendList,
+  getLastMessage
 } = require('../model/m_chat')
 
 module.exports = {
@@ -40,8 +41,13 @@ module.exports = {
   getAllRoomChat: async (req, res) => {
     try {
       const { user_id } = req.decodeToken
-      console.log(user_id)
       const roomChat = await getAllChat(user_id)
+      for (let i = 0; i < roomChat.length; i++) {
+        let temp = ''
+        temp = await getLastMessage(roomChat[i].room_chat)
+        roomChat[i].chat_content = temp
+      }
+      console.log(roomChat)
       if (roomChat.length > 0) {
         return helper.response(res, 200, 'Success Get All Room Chat', roomChat)
       } else {

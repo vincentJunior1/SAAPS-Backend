@@ -86,5 +86,16 @@ module.exports = {
         }
       )
     })
+  },
+  getLastMessage: (room) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        'SELECT chat_content FROM chat WHERE room_chat = ? ORDER BY chat_created_at DESC LIMIT 1',
+        room,
+        (error, result) => {
+          !error ? resolve(result[0].chat_content) : reject(new Error(error))
+        }
+      )
+    })
   }
 }
