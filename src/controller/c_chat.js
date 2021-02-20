@@ -7,7 +7,9 @@ const {
   getChatPerId,
   readChatModel,
   getAllFriendList,
-  getLastMessage
+  getLastMessage,
+  getChatPerRoomAndId,
+  deleteChatModel
 } = require('../model/m_chat')
 
 module.exports = {
@@ -47,7 +49,6 @@ module.exports = {
         temp = await getLastMessage(roomChat[i].room_chat)
         roomChat[i].chat_content = temp
       }
-      console.log(roomChat)
       if (roomChat.length > 0) {
         return helper.response(res, 200, 'Success Get All Room Chat', roomChat)
       } else {
@@ -113,6 +114,27 @@ module.exports = {
       return helper.response(res, 200, 'Success Get All Friend list', result)
     } catch (error) {
       return helper.response(res, 400, 'Something Wrong', error)
+    }
+  },
+  deleteChat: async (req, res) => {
+    try {
+      const { id } = req.params
+      const data = await getChatPerRoomAndId(id)
+      data.map(async (x) => {
+        delete x.room_id
+        x = { ...x, ...{ room_status: 0 } }
+        console.log(x)
+        await deleteChatModel(x, id)
+      })
+      return helper.response(res, 200, 'Success Delete Chat')
+    } catch (error) {
+      console.log(error)
+      return helper.response(
+        res,
+        400,
+        'Failed To Delete Chat please try again',
+        error
+      )
     }
   }
 }

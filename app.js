@@ -33,7 +33,6 @@ io.on('connection', (socket) => {
     socket.join(data.room)
   })
   socket.on('changeRoom', (data) => {
-    console.log(data)
     socket.leave(data.oldRoom)
     socket.join(data.room)
   })

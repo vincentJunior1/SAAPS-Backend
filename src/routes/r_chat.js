@@ -5,7 +5,8 @@ const {
   getChatPerRoom,
   sendMessage,
   readChat,
-  getFriendList
+  getFriendList,
+  deleteChat
 } = require('../controller/c_chat')
 const { authorization } = require('../middleware/auth')
 
@@ -15,5 +16,6 @@ router.get('/getallfriends/', authorization, getFriendList)
 router.get('/getchat/:id', authorization, getChatPerRoom)
 router.post('/sendmessage/:id', authorization, sendMessage)
 router.patch('/readmessage/:id', authorization, readChat)
+router.patch('/deletechat/:id', authorization, deleteChat)
 
 module.exports = router
