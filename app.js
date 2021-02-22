@@ -10,13 +10,14 @@ dotenv.config()
 const app = express()
 app.use(cors())
 
-app.use(express.static('uploads'))
+app.use('/api3', express.static('uploads'))
 const http = require('http')
 const server = http.createServer(app)
 const io = socket(server, {
   cors: {
     origin: '*'
-  }
+  },
+  path: '/api3/socket.io'
 })
 io.on('connection', (socket) => {
   console.log('Socket.Io Connect')
@@ -24,6 +25,7 @@ io.on('connection', (socket) => {
     io.emit('chatMessage', data)
   })
   socket.on('privateMessage', (data) => {
+    socket.broadcast.to(data.room).emit('chatMessage', data)
     socket.emit('chatMessage', data)
   })
   socket.on('broadcastMessage', (data) => {
@@ -33,10 +35,12 @@ io.on('connection', (socket) => {
     socket.join(data.room)
   })
   socket.on('changeRoom', (data) => {
+    console.log('change room')
     socket.leave(data.oldRoom)
     socket.join(data.room)
   })
   socket.on('roomMessage', (data) => {
+    console.log(data)
     io.to(data.room_chat).emit('chatMessage', data)
   })
   socket.on('typing', (data) => {
@@ -48,7 +52,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(morgan('dev'))
 
-app.use('/', routerNavigation)
+app.use('/api3', routerNavigation)
 
 server.listen(3000, () => {
   console.log('Listening on Port 3000')

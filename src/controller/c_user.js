@@ -51,7 +51,7 @@ module.exports = {
           from: '"Admin SAAPPS 👻" <liekian71@gmail.com>', // sender address
           to: user_email, // list of receivers
           subject: 'Verification', // Subject line
-          html: `Click Link For Verification<b>http://localhost:8080/verification/${userCode}</b>` // html body
+          html: `Click Link For Verification <a href="http://localhost:8080/verification/${userCode}"> Click Here</b>` // html body
         })
         const result = await registerUserModel(setData)
         return helper.response(res, 200, 'Success Add Data', result)
@@ -69,37 +69,40 @@ module.exports = {
       if (cekEmail.length <= 0) {
         return helper.response(res, 400, 'User Not Registred')
       } else {
-        console.log(cekEmail[0].user_password)
-        const password = bcrypt.compareSync(
-          user_password,
-          cekEmail[0].user_password
-        )
-        if (password) {
-          const {
-            user_id,
-            user_name,
-            user_email,
-            user_phone,
-            user_status,
-            user_image,
-            user_lat,
-            user_lng
-          } = cekEmail[0]
-          const payload = {
-            user_id,
-            user_name,
-            user_email,
-            user_phone,
-            user_status,
-            user_image,
-            user_lat,
-            user_lng
-          }
-          const token = jwt.sign(payload, 'SAAPPS', { expiresIn: '12h' })
-          const result = { ...payload, token }
-          return helper.response(res, 200, 'Success Login', result)
+        if (cekEmail[0].user_status == 0) {
+          return helper.response(res, 401, 'Please Verify your email first')
         } else {
-          return helper.response(res, 400, 'Wrong Password')
+          const password = bcrypt.compareSync(
+            user_password,
+            cekEmail[0].user_password
+          )
+          if (password) {
+            const {
+              user_id,
+              user_name,
+              user_email,
+              user_phone,
+              user_status,
+              user_image,
+              user_lat,
+              user_lng
+            } = cekEmail[0]
+            const payload = {
+              user_id,
+              user_name,
+              user_email,
+              user_phone,
+              user_status,
+              user_image,
+              user_lat,
+              user_lng
+            }
+            const token = jwt.sign(payload, 'SAAPPS', { expiresIn: '12h' })
+            const result = { ...payload, token }
+            return helper.response(res, 200, 'Success Login', result)
+          } else {
+            return helper.response(res, 400, 'Wrong Password')
+          }
         }
       }
     } catch (error) {
@@ -110,10 +113,18 @@ module.exports = {
   updateProfile: async (req, res) => {
     try {
       const { user_id } = req.decodeToken
-      const { user_name, user_email, user_phone, user_lat, user_lng } = req.body
+      const {
+        user_name,
+        user_email,
+        user_bio,
+        user_phone,
+        user_lat,
+        user_lng
+      } = req.body
       const setData = {
         user_name,
         user_email,
+        user_bio,
         user_phone,
         user_updated_at: new Date(),
         user_lat,
@@ -129,7 +140,10 @@ module.exports = {
           const result = await patchUserModel(newData, user_id)
           return helper.response(res, 200, 'Success Patch User Data', result)
         } else {
-          if (userDetail[0].user_image === '') {
+          if (
+            userDetail[0].user_image === null ||
+            userDetail[0].user_image === ''
+          ) {
             const newData = {
               ...userDetail[0],
               ...setData,
@@ -262,6 +276,24 @@ module.exports = {
         res,
         400,
         'Something Error With Server Please Try Again',
+        error
+      )
+    }
+  },
+  getUserById: async (req, res) => {
+    try {
+      const { id } = req.params
+      const user = await cekUserModel(id)
+      if (user.length > 0) {
+        return helper.response(res, 200, 'Success Get Profile Friend', user)
+      } else {
+        return helper.response(res, 404, 'User Not Found')
+      }
+    } catch (error) {
+      return helper.response(
+        res,
+        400,
+        'Something Wrong please try again',
         error
       )
     }
