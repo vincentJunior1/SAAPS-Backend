@@ -54,6 +54,6 @@ app.use(morgan('dev'))
 
 app.use('/api3', routerNavigation)
 
-server.listen(3000, () => {
+server.listen(process.env.PORT, () => {
   console.log('Listening on Port 3000')
 })
