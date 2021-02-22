@@ -84,7 +84,8 @@ module.exports = {
         user_id_from: user_id,
         user_id_to: user_id_to,
         chat_content,
-        chat_status: 0
+        chat_status: 0,
+        chat_updated_at: new Date()
       }
       const result = await sendMessageModel(message)
       return helper.response(res, 200, 'Success Send Message', result)
