@@ -12,6 +12,8 @@ const {
   addFriendModel,
   cekFriendListModel
 } = require('../model/m_user')
+const dotenv = require('dotenv')
+dotenv.config()
 module.exports = {
   registerUser: async (req, res) => {
     try {
@@ -42,13 +44,13 @@ module.exports = {
           port: 465,
           secure: true,
           auth: {
-            user: 'liekian71@gmail.com',
-            pass: 'Jepang123_'
+            user: process.env.EMAIL,
+            pass: process.env.PASS
           }
         })
         console.log(transporter)
         let info = await transporter.sendMail({
-          from: '"Admin SAAPPS 👻" <liekian71@gmail.com>', // sender address
+          from: `"Admin SAAPPS 👻" ${process.env.EMAIL}`, // sender address
           to: user_email, // list of receivers
           subject: 'Verification', // Subject line
           html: `Click Link For Verification <a href="http://localhost:8080/verification/${userCode}"> Click Here</b>` // html body
