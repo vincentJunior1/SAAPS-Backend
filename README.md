@@ -23,7 +23,7 @@ SAAPS Is Realtime Chatting for who afraid of their privacy, now we provide your 
 5. Create a database with the name #beginer_backend, and Import file sql to **phpmyadmin**
 6. Open Postman desktop application or Chrome web app extension that has installed before
 7. Choose HTTP Method and enter request url.(ex. localhost:3000/)
-8. You can see all the end point [here](https://documenter.getpostman.com/view/10116394/TVsoGAGH)
+8. You can see all the end point [here](https://documenter.getpostman.com/view/10116394/TWDZGbL5)
 
 ## Set up .env file
 
