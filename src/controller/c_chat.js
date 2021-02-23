@@ -76,12 +76,11 @@ module.exports = {
   },
   sendMessage: async (req, res) => {
     try {
-      const { user_id } = req.decodeToken
       const { id } = req.params
-      const { user_id_to, chat_content } = req.body
+      const { user_id_from, user_id_to, chat_content } = req.body
       const message = {
         room_chat: id,
-        user_id_from: user_id,
+        user_id_from: user_id_from,
         user_id_to: user_id_to,
         chat_content,
         chat_status: 0,
