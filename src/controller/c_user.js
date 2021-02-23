@@ -25,7 +25,6 @@ module.exports = {
         user_phone
       } = req.body
       const cekEmail = await cekEmailUser(user_email)
-      console.log(cekEmail)
       if (cekEmail.length <= 0) {
         const salt = bcrypt.genSaltSync(10)
         const encryptPassword = bcrypt.hashSync(user_password, salt)
@@ -49,7 +48,6 @@ module.exports = {
             pass: process.env.PASS
           }
         })
-        console.log(transporter)
         let info = await transporter.sendMail({
           from: `"Admin SAAPPS 👻" ${process.env.EMAIL}`, // sender address
           to: user_email, // list of receivers
@@ -109,7 +107,6 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.log(error)
       return helper.response(res, 400, "Can't Login User", error)
     }
   },
@@ -179,7 +176,6 @@ module.exports = {
         return helper.response(res, 404, 'User Not Found')
       }
     } catch (error) {
-      console.log(error)
       return helper.response(res, 400, "Can't Update Profile", error)
     }
   },
@@ -187,7 +183,6 @@ module.exports = {
     try {
       const { user_email } = req.decodeToken
       const { userEmail } = req.body
-      console.log(userEmail)
       if (user_email == userEmail) {
         return helper.response(res, 400, "You Can't Search Your Own Email")
       } else {
@@ -199,7 +194,6 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.log(error)
       return helper.response(res, 400, 'Something Wrong', error)
     }
   },
@@ -218,7 +212,6 @@ module.exports = {
             user_id_to: id,
             friend_status: 1
           }
-          console.log('oke')
           await addFriendModel(friendData)
           return helper.response(
             res,
@@ -234,7 +227,6 @@ module.exports = {
         )
       }
     } catch (error) {
-      console.log(error)
       return helper.response(res, 400, 'Something Wrong', error)
     }
   },
