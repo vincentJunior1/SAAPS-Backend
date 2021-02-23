@@ -34,6 +34,7 @@ module.exports = {
           user_code: userCode,
           user_name,
           user_email,
+          user_status: 0,
           user_password: encryptPassword,
           user_phone,
           user_bio
